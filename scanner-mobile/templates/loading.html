@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processing...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --dark-purple: #1e0045;
+        --main-purple: #a267ff;
+        --light-purple: #d4b9fe;
+        --light-blue: #cae9ee;
+        --accent-orange: #ff6222;
+        --accent-lime: #e4ff7a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Rajdhani", sans-serif;
+        background-color: var(--dark-purple);
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        overflow: hidden;
+        flex-direction: column;
+        background-image: linear-gradient(135deg, var(--dark-purple), #4a288a);
+      }
+
+      
+      #particle-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; 
+      }
+
+      .logo-container {
+        position: relative;
+        margin-bottom: 40px; 
+        display: flex; 
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%; 
+        padding: 20px; 
+        background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, rgba(255, 98, 34, 0.1) 30%, transparent 70%); /* Light orange background for the logo */
+        animation: logo-bg-pulse 3s infinite alternate ease-in-out;
+      }
+
+      
+      .custom-logo {
+        width: 180px; 
+        height: auto;
+        filter: invert(1) drop-shadow(0 0 8px var(--accent-orange)); 
+        animation: custom-logo-glow 3s infinite alternate ease-in-out;
+      }
+      
+      @keyframes logo-bg-pulse {
+          0% { box-shadow: 0 0 15px rgba(255, 98, 34, 0.5); } 
+          50% { box-shadow: 0 0 30px rgba(228, 255, 122, 0.8); } 
+          100% { box-shadow: 0 0 15px rgba(255, 98, 34, 0.5); }
+      }
+
+      @keyframes custom-logo-glow {
+          0% { filter: invert(1) drop-shadow(0 0 8px var(--accent-orange)); }
+          50% { filter: invert(1) drop-shadow(0 0 15px var(--accent-lime)); }
+          100% { filter: invert(1) drop_shadow(0 0 8px var(--accent-orange)); }
+      }
+
+      .spinner {
+        border: 5px solid rgba(162, 103, 255, 0.3);
+        border-top: 5px solid var(--accent-lime);
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 25px; 
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      h2 {
+        font-size: 2.2em;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--light-blue);
+        text-shadow: 0 0 10px rgba(202, 233, 238, 0.5);
+      }
+
+      
+      @media (max-width: 600px) {
+        .custom-logo {
+          width: 220px;
+        }
+        .logo-container {
+            padding: 30px; 
+        }
+        h2 {
+          margin-top: 30px;
+          font-size: 1.9em;
+          text-align: center;
+          padding: 0 15px;
+        }
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border-width: 4px;
+        }
+        .logo-container {
+            margin-bottom: 50px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="particle-grid"></canvas>
+
+    <div class="logo-container">
+      <img
+        src="/static/UG logo1.png"
+        alt="Custom Logo"
+        class="custom-logo"
+      />
+    </div>
+
+    <div class="spinner"></div>
+    <h2>Processing... Please wait</h2>
+
+    <script>
+      
+      const particleCanvas = document.getElementById("particle-grid");
+      const particleCtx = particleCanvas.getContext('2d');
+      let particles = [];
+
+      function setupParticleGrid() {
+          particleCanvas.width = window.innerWidth;
+          particleCanvas.height = window.innerHeight;
+          particles = [];
+          const particleCount = 100;
+          for (let i = 0; i < particleCount; i++) {
+              particles.push({
+                  x: Math.random() * particleCanvas.width,
+                  y: Math.random() * particleCanvas.height,
+                  radius: Math.random() * 1.5 + 0.5,
+                  opacity: Math.random() * 0.5 + 0.2
+              });
+          }
+      }
+      
+      function animateParticles() {
+          particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+          particles.forEach(p => {
+              p.opacity += (Math.random() - 0.5) * 0.01;
+              if (p.opacity < 0.2) p.opacity = 0.2;
+              if (p.opacity > 0.7) p.opacity = 0.7;
+
+              particleCtx.beginPath();
+              particleCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+              particleCtx.fillStyle = `rgba(162, 103, 255, ${p.opacity})`;
+              particleCtx.fill();
+          });
+          requestAnimationFrame(animateParticles);
+      }
+
+      
+      setupParticleGrid();
+      animateParticles();
+      window.addEventListener('resize', setupParticleGrid);
+
+
+      // Original Backend Polling Logic
+      function checkTaskStatus() {
+        fetch("/check_task_status")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "complete") {
+              window.location.href = data.redirect;
+            } else {
+              setTimeout(checkTaskStatus, 1000); 
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking task status:", error);
+            
+            setTimeout(checkTaskStatus, 1000); 
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(checkTaskStatus, 1000);
+      });
+
+      async function pollStatus(sessionId) {
+        const interval = setInterval(async () => {
+          try {
+            const response = await fetch(`/check_status/${sessionId}`);
+            const data = await response.json();
+
+            if (data.webhook_received) {
+              clearInterval(interval);
+              window.location.href = "/";
+            }
+          } catch (err) {
+            console.error("Polling error:", err);
+          }
+        }, 1000); 
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+      if (sessionId) {
+        pollStatus(sessionId);
+      }
+    </script>
+  </body>
+</html>
